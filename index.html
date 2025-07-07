@@ -1860,10 +1860,53 @@
             const month = (today.getMonth() + 1).toString().padStart(2, '0');
             document.getElementById('report-month').value = `${year}-${month}`;
             
-            // Load settings on startup
+        
             loadSettings();
         });
 
     </script>
+    <script type="module">
+  
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+  import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4iq6F9BSnmq29KDYGNOygMJzkriDT3H8",
+    authDomain: "checked-std-blh.firebaseapp.com",
+    projectId: "checked-std-blh",
+    storageBucket: "checked-std-blh.appspot.com", 
+    messagingSenderId: "889737588047",
+    appId: "1:889737588047:web:53554bac0d37a1d2e4a93a",
+    measurementId: "G-JJCPHHY86F"
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+
+  async function checkIn(studentId) {
+    const today = new Date().toISOString().slice(0,10); 
+    await setDoc(
+      doc(db, "attendance", today, "students", studentId),
+      {
+        time: serverTimestamp(),
+        status: "present"
+      },
+      { merge: true }
+    );
+    alert("✅ เช็กชื่อสำเร็จ!");
+  }
+
+
+  document.getElementById("btnCheckIn").addEventListener("click", () => {
+    const studentId = localStorage.getItem("studentId") || "student001";
+    checkIn(studentId);
+  });
+</script>
+
 </body>
 </html>
